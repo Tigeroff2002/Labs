@@ -1,0 +1,15 @@
+{
+  "name": "searcher_for_k_statistics",
+  "version": "1.0.0",
+  "description": "Script for searching k statistics in related array of numbers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kirill Parakhin",
+  "license": "ISC",
+  "dependencies": {
+    "gcd_searcher": "^1.0.1",
+    "lodash": "^4.17.21"
+  }
+}
