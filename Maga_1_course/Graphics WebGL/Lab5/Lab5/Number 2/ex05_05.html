@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Муравейник</title>
+<meta content="charset=utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+
+<script src="Three.js"></script>
+<script src="Detector.js"></script>
+<script src="OrbitControls.js"></script>
+<script src="THREEx.KeyboardState.js"></script>
+<script src="THREEx.FullScreen.js"></script>
+<script src="THREEx.WindowResize.js"></script>
+
+<div id="infoButton"></div>
+<div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
+<script>
+var container, scene, camera, renderer, controls;
+var keyboard = new THREEx.KeyboardState();
+var clock = new THREE.Clock();
+var annie;
+init();
+animate();
+function init() 
+ {
+  scene = new THREE.Scene();
+  var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+  var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+  camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+  scene.add(camera);
+  camera.position.set(0,10,200);
+  camera.lookAt(scene.position);	
+  if ( Detector.webgl ) 	renderer = new THREE.WebGLRenderer( {antialias:true} );
+  else 	renderer = new THREE.CanvasRenderer(); 
+  renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+  container = document.getElementById( 'ThreeJS' );
+  container.appendChild( renderer.domElement );
+  THREEx.WindowResize(renderer, camera);
+  THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+  controls = new THREE.OrbitControls( camera, renderer.domElement );
+  var light = new THREE.PointLight(0xffffff);
+  light.position.set(0,250,0);
+  scene.add(light);
+  var runnerTexture = new THREE.ImageUtils.loadTexture( 'marsch.png' );
+  annie = new TextureAnimator( runnerTexture, 10, 3, 10, 200 ); 
+  var runnerMaterial = new THREE.MeshBasicMaterial( { map: runnerTexture, side:THREE.DoubleSide } );
+  var runnerGeometry = new THREE.PlaneGeometry(90, 75, 1, 1);
+  var runner = new THREE.Mesh(runnerGeometry, runnerMaterial);
+  runner.position.set(-100,25,0);
+  scene.add(runner);
+ }
+
+function animate() 
+{
+  requestAnimationFrame( animate );
+  render();		
+  update();
+}
+
+function update()
+{
+  var delta = clock.getDelta(); 
+  annie.update(600 * delta);
+  controls.update();
+}
+
+function render() { renderer.render( scene, camera ); }
+
+function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) 
+{	
+ this.tilesHorizontal = tilesHoriz;
+ this.tilesVertical = tilesVert;
+ this.numberOfTiles = numTiles;
+ texture.wrapS = texture.wrapT = THREE.RepeatWrapping; 
+ texture.repeat.set( 1 / this.tilesHorizontal, 1 / this.tilesVertical );
+ this.tileDisplayDuration = tileDispDuration;
+ this.currentDisplayTime = 0;
+ this.currentTile = 0;
+ this.update = function( milliSec )
+ {
+   this.currentDisplayTime += milliSec;
+   while (this.currentDisplayTime > this.tileDisplayDuration)
+   {
+    this.currentDisplayTime -= this.tileDisplayDuration;
+    this.currentTile++;
+    if (this.currentTile == this.numberOfTiles)
+	  this.currentTile = 0;
+    var currentColumn = this.currentTile % this.tilesHorizontal;
+    texture.offset.x = currentColumn / this.tilesHorizontal;
+    var currentRow = Math.floor( this.currentTile / this.tilesHorizontal );
+    texture.offset.y = currentRow / this.tilesVertical;
+   }
+ };
+}		
+</script>
+</body>
+</html>

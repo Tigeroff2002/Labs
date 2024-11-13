@@ -1,0 +1,266 @@
+<html>
+<head>
+<title>Множественное текстурирование 3D аквариума с крышкой</title>
+<meta charset="utf-8" />
+</head>
+<body>
+<canvas id="canvas3D" width="400" height="300">Ваш браузер не поддерживает элемент canvas</canvas>
+<script type="text/javascript" src="gl-matrix-min.js"></script>
+<!-- фрагментный шейдер -->
+<script id="shader-fs" type="x-shader/x-fragment">
+precision highp float;
+uniform sampler2D uSamplerWalls;
+uniform sampler2D uSamplerTop;
+varying vec2 vTextureCoords;
+varying float vIsTopSurface;
+
+void main(void) {
+    if (vIsTopSurface > 0.5) {
+        gl_FragColor = texture2D(uSamplerTop, vTextureCoords);
+    } else {
+        gl_FragColor = texture2D(uSamplerWalls, vTextureCoords);
+    }
+}
+</script>
+<!-- вершинный шейдер -->
+<script id="shader-vs" type="x-shader/x-vertex">
+attribute vec3 aVertexPosition;
+attribute vec2 aVertexTextureCoords;
+attribute float aIsTopSurface;
+varying vec2 vTextureCoords;
+varying float vIsTopSurface;
+uniform mat4 uMVMatrix;
+uniform mat4 uPMatrix;
+
+void main(void) {
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+	vTextureCoords = aVertexTextureCoords;
+	vIsTopSurface = aIsTopSurface;
+}
+</script>
+
+<script type="text/javascript">
+var gl;
+var shaderProgram;
+var aquariumVertexBuffer;
+var aquariumIndexBuffer;
+var aquariumTextureCoordsBuffer;
+var aquariumTopSurfaceBuffer;
+
+var aquariumWallsTexture; 
+var aquariumTopTexture;
+var angle = 2.0;
+var zTranslation = -2.0;
+
+var mvMatrix = mat4.create(); 
+var pMatrix = mat4.create();
+
+function initShaders() {
+	var fragmentShader = getShader(gl.FRAGMENT_SHADER, 'shader-fs');
+	var vertexShader = getShader(gl.VERTEX_SHADER, 'shader-vs');
+
+	shaderProgram = gl.createProgram();
+	gl.attachShader(shaderProgram, vertexShader);
+	gl.attachShader(shaderProgram, fragmentShader);
+
+	gl.linkProgram(shaderProgram);
+	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+		alert("Не удалось установить шейдеры");
+	}
+	gl.useProgram(shaderProgram);
+
+	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition"); 
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+	
+	shaderProgram.vertexTextureAttributeLoc = gl.getAttribLocation(shaderProgram, "aVertexTextureCoords");
+	gl.enableVertexAttribArray(shaderProgram.vertexTextureAttributeLoc);
+	
+	shaderProgram.isTopSurfaceAttribute = gl.getAttribLocation(shaderProgram, "aIsTopSurface");
+	gl.enableVertexAttribArray(shaderProgram.isTopSurfaceAttribute);
+	
+	shaderProgram.MVMatrix = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    shaderProgram.ProjMatrix = gl.getUniformLocation(shaderProgram, "uPMatrix");
+}
+
+function setMatrixUniforms(){
+	gl.uniformMatrix4fv(shaderProgram.ProjMatrix, false, pMatrix);
+	gl.uniformMatrix4fv(shaderProgram.MVMatrix, false, mvMatrix);  
+} 
+
+function getShader(type, id) {
+	var source = document.getElementById(id).innerHTML;
+	var shader = gl.createShader(type);
+	gl.shaderSource(shader, source);
+	gl.compileShader(shader);
+	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+		alert("Ошибка компиляции шейдера: " + gl.getShaderInfoLog(shader));
+		gl.deleteShader(shader);   
+		return null;
+	}
+	return shader;  
+}
+
+function initAquariumBuffers() {
+	var vertices = [
+		// Передняя стена
+		-0.5, -0.5, 0.5,
+		-0.5, 0.5, 0.5,
+		 0.5, 0.5, 0.5,
+		 0.5, -0.5, 0.5,
+		// Задняя стена
+		-0.5, -0.5, -0.5,
+		-0.5, 0.5, -0.5,
+		 0.5, 0.5, -0.5,
+		 0.5, -0.5, -0.5,
+		// Левая стена
+		-0.5, -0.5, -0.5,
+		-0.5, 0.5, -0.5,
+		-0.5, 0.5, 0.5,
+		-0.5, -0.5, 0.5,
+		// Правая стена
+		0.5, -0.5, -0.5,
+		0.5, 0.5, -0.5,
+		0.5, 0.5, 0.5,
+		0.5, -0.5, 0.5,
+		// Дно
+		-0.5, -0.5, -0.5,
+		-0.5, -0.5, 0.5,
+		0.5, -0.5, 0.5,
+		0.5, -0.5, -0.5,
+		// Крыша
+		-0.5, 0.5, -0.5,
+		-0.5, 0.5, 0.5,
+		0.5, 0.5, 0.5,
+		0.5, 0.5, -0.5
+	];
+				 
+	var indices = [
+		// Передняя стена
+		0, 1, 2,  2, 3, 0,
+		// Задняя стена
+		4, 5, 6,  6, 7, 4,
+		// Левая стена
+		8, 9, 10,  10, 11, 8,
+		// Правая стена
+		12, 13, 14,  14, 15, 12,
+		// Дно
+		16, 17, 18,  18, 19, 16,
+		// Крыша
+		20, 21, 22,  22, 23, 20
+	];
+
+	aquariumVertexBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, aquariumVertexBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+	aquariumVertexBuffer.itemSize = 3;
+
+	aquariumIndexBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, aquariumIndexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+	aquariumIndexBuffer.numberOfItems = indices.length;	
+	
+	var textureCoords = [];
+	for (var i = 0; i < 5; i++) {
+		textureCoords.push(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0);
+	}
+	textureCoords.push(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0); // Крыша
+	aquariumTextureCoordsBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, aquariumTextureCoordsBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+	aquariumTextureCoordsBuffer.itemSize = 2;
+
+	var topSurfaceFlags = [];
+	for (var i = 0; i < 20; i++) topSurfaceFlags.push(0.0); // Стены и дно
+	for (var i = 0; i < 4; i++) topSurfaceFlags.push(1.0); // Крыша
+	aquariumTopSurfaceBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, aquariumTopSurfaceBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(topSurfaceFlags), gl.STATIC_DRAW);
+	aquariumTopSurfaceBuffer.itemSize = 1;
+}
+
+function aquariumDraw() {    
+	gl.bindBuffer(gl.ARRAY_BUFFER, aquariumVertexBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, aquariumVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, aquariumTextureCoordsBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexTextureAttributeLoc, aquariumTextureCoordsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, aquariumTopSurfaceBuffer);
+	gl.vertexAttribPointer(shaderProgram.isTopSurfaceAttribute, aquariumTopSurfaceBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+	gl.activeTexture(gl.TEXTURE0);
+	gl.bindTexture(gl.TEXTURE_2D, aquariumWallsTexture);
+	gl.uniform1i(gl.getUniformLocation(shaderProgram, "uSamplerWalls"), 0);
+
+	gl.activeTexture(gl.TEXTURE1);
+	gl.bindTexture(gl.TEXTURE_2D, aquariumTopTexture);
+	gl.uniform1i(gl.getUniformLocation(shaderProgram, "uSamplerTop"), 1);
+
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, aquariumIndexBuffer);
+	gl.drawElements(gl.TRIANGLES, aquariumIndexBuffer.numberOfItems, gl.UNSIGNED_SHORT, 0);
+}
+
+function setupTextures() {
+	aquariumWallsTexture = gl.createTexture();
+	aquariumWallsTexture.image = new Image();
+	aquariumWallsTexture.image.onload = function () {
+		handleTextureLoaded(aquariumWallsTexture)
+	}
+	aquariumWallsTexture.image.src = "aquarium.png"; 
+
+	aquariumTopTexture = gl.createTexture();
+	aquariumTopTexture.image = new Image();
+	aquariumTopTexture.image.onload = function () {
+		handleTextureLoaded(aquariumTopTexture)
+	}
+	aquariumTopTexture.image.src = "stone.jpg"; 
+}
+
+function handleTextureLoaded(texture) {
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+	gl.generateMipmap(gl.TEXTURE_2D);
+	gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+function setupWebGL(){
+	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	gl.enable(gl.DEPTH_TEST);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
+	var canvas = document.getElementById("canvas3D");
+	
+	mat4.perspective(pMatrix, Math.PI/4, canvas.width/canvas.height, 0.1, 100.0);
+	mat4.identity(mvMatrix);
+	mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, zTranslation]);
+	mat4.rotate(mvMatrix, mvMatrix, angle, [1, 1, 1]);
+}
+
+function initWebGL() {
+	try {
+		var canvas = document.getElementById("canvas3D");
+		gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+	} catch(e) {}
+	if (!gl) { alert("Ваш браузер не поддерживает WebGL"); }
+	if (gl) {
+		gl.viewportWidth = canvas.width;
+		gl.viewportHeight = canvas.height;
+		initShaders();
+		initAquariumBuffers();
+		setupTextures();
+		(function animLoop(){
+			setupWebGL();
+			setMatrixUniforms();
+			aquariumDraw();
+			requestAnimationFrame(animLoop);
+		})();
+	}
+}
+
+initWebGL(document.getElementById("canvas3D"));
+</script>
+</body>
+</html>
