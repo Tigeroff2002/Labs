@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Отражение и блик</title>
+<meta content="charset=utf-8">
+<script src="three.js"></script>
+<script src="jquery-1.js"></script>
+<script src="jquery-ui.js"></script>
+</head>
+<link href="jquery-ui.css" rel="stylesheet">
+<link href="bootstrap.css" rel="stylesheet">
+<body>
+<div class="row">
+	<div class="col-md-6">
+		<div class="canvas">
+			<canvas style="width: 458px; height: 305.333px;" height="305" width="458" id="primer"></canvas>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="raw slider-box">
+			<h4 class="text-center">Отражение</h4>
+			<div class="col-xs-6 col-md-offset-1">
+				<div class="slider-red ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
+                                  <span style="color:red;" style="left: 0%;" class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0">R</span></div>
+			</div>
+			<div class="col-xs-4 col-md-offset-1 text-center"><span>0</span></div>
+			<div class="clearfix visible-xs"></div>
+		</div>
+		<div class="raw slider-box">
+			<div class="col-xs-6 col-md-offset-1">
+				<div class="slider-green ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
+                                  <span style="color:green;" style="left: 0%;" class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0">G</span></div>
+			</div>
+			<div class="col-xs-4 col-md-offset-1 text-center"><span>0</span></div>
+			<div class="clearfix visible-xs"></div>
+		</div>
+		<div class="raw slider-box">
+			<div class="col-xs-6 col-md-offset-1">
+				<div class="slider-blue ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
+                                  <span style="color:blue;" style="left: 0%;" class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0">B</span></div>
+			</div>
+			<div class="col-xs-4 col-md-offset-1 text-center"><span>0</span></div>
+			<div class="clearfix visible-xs"></div>
+		</div>
+		<div class="raw slider-box">
+			<h4 class="text-center">Блик</h4>
+			<div class="col-xs-6 col-md-offset-1">
+				<div class="slider-shin ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
+                                  <span style="left: 0%;" class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0"></span></div>
+			</div>
+			<div class="col-xs-4 col-md-offset-1 text-center"><span>1</span></div>
+			<div class="clearfix visible-xs"></div>
+		</div>
+	</div>
+</div>
+</body>
+<script src="ex12_03.js"></script>
+</html>
+
