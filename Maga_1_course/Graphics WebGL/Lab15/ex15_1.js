@@ -1,0 +1,109 @@
+var scene, camera, renderer, pyramid1, sphere1, pyramid2, sphere2, particles;
+
+init();
+animate();
+
+function init() {
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(0, 100, 200);
+
+    scene = new THREE.Scene();
+
+    // Материалы объектов
+    var obj_material1 = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+    var obj_material2 = new THREE.MeshPhongMaterial({ color: 0xaacb00 });
+
+    // Геометрия объектов
+    var pyramid_geometry = new THREE.CylinderGeometry(0, 16, 20, 3);
+    var sphere_geometry = new THREE.SphereGeometry(20, 6, 8);
+
+    // Рыбка 1
+    pyramid1 = new THREE.Mesh(pyramid_geometry, obj_material1);
+    pyramid1.position.set(-40, 60, 0);
+    scene.add(pyramid1);
+
+    sphere1 = new THREE.Mesh(sphere_geometry, obj_material1);
+    sphere1.position.set(-10, 60, 0);
+    scene.add(sphere1);
+
+    // Рыбка 2
+    pyramid2 = new THREE.Mesh(pyramid_geometry, obj_material2);
+    pyramid2.position.set(-40, 0, 0);
+    scene.add(pyramid2);
+
+    sphere2 = new THREE.Mesh(sphere_geometry, obj_material2);
+    sphere2.position.set(-10, 0, 0);
+    scene.add(sphere2);
+
+    // Освещение
+    var light = new THREE.HemisphereLight(0xaaaaaa, 0x444444, 1);
+    light.position.set(0, 200, 0);
+    scene.add(light);
+
+    // Система частиц (корм для рыбок)
+    createParticleSystem();
+
+    // Поверхность частиц
+    createParticleSurface();
+
+    // Добавление событий изменения размера окна
+    window.addEventListener('resize', onWindowResize, false);
+}
+
+function createParticleSystem() {
+    var particleCount = 200;
+    var particles = new THREE.BufferGeometry();
+    var positions = [];
+
+    for (var i = 0; i < particleCount; i++) {
+        positions.push(
+            Math.random() * 200 - 100,
+            Math.random() * 100,
+            Math.random() * 200 - 100
+        );
+    }
+
+    particles.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+
+    var particleMaterial = new THREE.PointsMaterial({
+        color: 0xffdb8f,
+        size: 5,
+        transparent: true
+    });
+
+    var particleSystem = new THREE.Points(particles, particleMaterial);
+    scene.add(particleSystem);
+}
+
+function createParticleSurface() {
+    var size = 100;
+    var divisions = 50;
+
+    var geometry = new THREE.PlaneGeometry(size, size, divisions, divisions);
+    var material = new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.3
+    });
+
+    var surface = new THREE.Mesh(geometry, material);
+    surface.rotation.x = -Math.PI / 2;
+    surface.position.y = -10;
+    scene.add(surface);
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<COLLADA version="1.4.1" xmlns="http://www.collada.org/2005/11/COLLADASchema">
+  <asset>
+    <contributor>
+      <author>ASE to COLLADA Converter</author>
+    </contributor>
+    <created>2024-12-24T12:00:00</created>
+    <modified>2024-12-24T12:00:00</modified>
+    <unit meter="1.0" name="meter"/>
+    <up_axis>Y_UP</up_axis>
+  </asset>
+  <library_geometries/>
+</COLLADA>
