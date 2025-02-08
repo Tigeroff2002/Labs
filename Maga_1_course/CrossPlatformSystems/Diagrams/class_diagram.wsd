@@ -1,0 +1,106 @@
+@startuml
+class User { 
+    +id: int 
+    +email: string 
+    +role: string
+    +full_name: string 
+}  
+
+class City { 
+    +id: int 
+    +name: string 
+    +crossroad_numbers: int 
+}  
+
+class RoadSegment { 
+    +id: int 
+    +city_id: int 
+    +start_coord: string 
+    +end_coord: string 
+    +length: float 
+    +quality_factor: float 
+    +user_intensity: float 
+}  
+
+class Crossroad { 
+    +id: int 
+    +city_id: int 
+    +coord: string 
+    +type: string 
+}  
+
+class CrossroadLink { 
+    +crossroad_id: int 
+    +road_segment_id: int 
+    +road_degree: int 
+}  
+
+class RoadItem { 
+    +id: int 
+    +item_type: string 
+    +coord: string 
+    +weight: float 
+    +actuality: boolean 
+}  
+
+class RoadItemLink { 
+    +road_item_id: int 
+    +road_segment_id: int 
+    +factor_number: float 
+}  
+
+class Request { 
+    +id: int 
+    +user_id: int 
+    +start_point: string 
+    +end_point: string 
+    +datetime: datetime 
+    +preference_parameter: string 
+}  
+
+class Route { 
+    +id: int 
+    +request_id: int 
+    +total_distance: float 
+    +time: float 
+    +total_weight: float 
+}  
+
+class Video { 
+    +id: int 
+    +user_id: int 
+    +cloud_link: string 
+    +timelapses_json: string 
+}  
+
+class ImageTimeframe { 
+    +id: int 
+    +video_id: int 
+    +cloud_link: string 
+    +coord: string 
+    +reliability_factor: float 
+}  
+
+class RouteRoadSegmentLink { 
+    +route_id: int 
+    +road_segment_id: int 
+    +sequence_number: int 
+    +start_coord: string 
+    +end_coord: string 
+    +total_distance: float 
+    +total_time: float 
+}  
+
+User "1" -- "*" Request : makes
+Request "1" -- "1" Route : generates
+User "1" -- "*" Video : uploads
+Video "1" -- "*" ImageTimeframe : contains
+City "1" -- "*" RoadSegment : contains
+City "1" -- "*" Crossroad : has
+Crossroad "1" -- "*" CrossroadLink : connects
+RoadSegment "1" -- "*" CrossroadLink : linked to
+RoadSegment "1" -- "*" RoadItemLink : associated with
+RoadItem "1" -- "*" RoadItemLink : linked to
+Route "1" -- "*" RouteRoadSegmentLink : consists of
+RouteRoadSegmentLink "*" -- "1" RoadSegment : included in
+@enduml
