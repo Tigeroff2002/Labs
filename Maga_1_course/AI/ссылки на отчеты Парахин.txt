@@ -1,0 +1,3 @@
+https://colab.research.google.com/drive/1xwkpUc5vl-J-3aeLQLzpO3Mq3qTfLK2g#scrollTo=mX8Gtz6o5cwT - ноутбук
+https://docs.google.com/spreadsheets/d/1dCnrL6GMUUCYDt81e0TNJr5FpIYo603foUU33R1KmAM/edit?gid=462064484#gid=462064484 - исходный dataset
+https://docs.google.com/spreadsheets/d/1zWzn9e8dYKPiVe_9pGv4z3fofmyI_x4101S_ZL6WAww/edit?gid=986291818#gid=986291818 - предсказанный dataset

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE data SYSTEM "dtd_description.dtd">
+<data>
+    <user id="1" email="user1@example.com" role="admin" full_name="John Doe"/>
+    <user id="2" email="user2@example.com" role="user" full_name="Jane Smith"/>
+    
+    <city id="1" name="City1" crossroad_numbers="10"/>
+    
+    <roadsegment id="1" city_id="1" start_coord="40.7128, -74.0060" end_coord="40.7138, -74.0050" length="1500.5" quality_factor="0.8" user_intensity="0.75"/>
+    
+    <crossroad id="1" city_id="1" coord="40.7128, -74.0060" type="traffic_light"/>
+    <crossroad id="2" city_id="1" coord="40.7138, -74.0050" type="roundabout"/>
+    
+    <crossroadlink crossroad_id="1" road_segment_id="1" road_degree="2"/>
+    <crossroadlink crossroad_id="2" road_segment_id="1" road_degree="1"/>
+    
+    <roaditem id="1" item_type="sign" coord="40.7128, -74.0060" weight="10" actuality="true"/>
+    <roaditem id="2" item_type="lamp" coord="40.7138, -74.0050" weight="5" actuality="false"/>
+    
+    <roaditemlink road_item_id="1" road_segment_id="1" factor_number="1.5"/>
+    <roaditemlink road_item_id="2" road_segment_id="1" factor_number="1.0"/>
+    
+    <request id="1" user_id="1" start_point="40.7128, -74.0060" end_point="40.7138, -74.0050" datetime="2025-03-09T12:00:00" preference_parameter="fastest"/>
+    
+    <route id="1" request_id="1" total_distance="2.0" time="5.0" total_weight="15.0"/>
+    
+    <video id="1" user_id="1" cloud_link="http://cloudlink/video1" timelapses_json="{}"/>
+    <video id="2" user_id="2" cloud_link="http://cloudlink/video2" timelapses_json="{}"/>
+    
+    <imagetimeframe id="1" video_id="1" cloud_link="http://cloudlink/image1" coord="40.7128, -74.0060" reliability_factor="0.9"/>
+    <imagetimeframe id="2" video_id="2" cloud_link="http://cloudlink/image2" coord="40.7138, -74.0050" reliability_factor="0.8"/>
+    
+    <routeroadsegmentlink route_id="1" road_segment_id="1" sequence_number="1" start_coord="40.7128, -74.0060" end_coord="40.7138, -74.0050" total_distance="2.0" total_time="5.0"/>
+</data>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:document xmlns:ns="http://example.com/schema"
+             xsi:schemaLocation="http://example.com/schema xml_xchema.xsd"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    <ns:user>
+        <id>1</id>
+        <email>user@example.com</email>
+        <role>admin</role>
+        <full_name>John Doe</full_name>
+    </ns:user>
+    
+    <ns:request>
+        <id>1</id>
+        <user_id>1</user_id>
+        <start_point>40.7128, -74.0060</start_point>
+        <end_point>40.7138, -74.0050</end_point>
+        <datetime>2025-03-09T12:00:00</datetime>
+        <preference_parameter>fastest</preference_parameter>
+        <status>pending</status>
+    </ns:request>
+
+    <ns:crossroad>
+        <id>1</id>
+        <city_id>1</city_id>
+        <coord>40.7128, -74.0060</coord>
+        <type>traffic_light</type>
+    </ns:crossroad>
+
+    <ns:roadSegment>
+        <id>1</id>
+        <city_id>1</city_id>
+        <start_coord>40.7128, -74.0060</start_coord>
+        <end_coord>40.7138, -74.0050</end_coord>
+        <length>500.5</length>
+        <quality_factor>0.8</quality_factor>
+        <user_intensity>0.9</user_intensity>
+    </ns:roadSegment>
+    
+</ns:document>

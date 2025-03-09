@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ns="http://example.com/schema"
+           targetNamespace="http://example.com/schema"
+           elementFormDefault="qualified">
+    
+    <xs:simpleType name="emailType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="5"/>
+            <xs:maxLength value="255"/>
+            <xs:pattern value="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="coordType">
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="roleType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="admin"/>
+            <xs:enumeration value="user"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="statusType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="pending"/>
+            <xs:enumeration value="completed"/>
+            <xs:enumeration value="cancelled"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="typeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="traffic_light"/>
+            <xs:enumeration value="roundabout"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="userType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:int"/>
+            <xs:element name="email" type="ns:emailType"/>
+            <xs:element name="role" type="ns:roleType"/>
+            <xs:element name="full_name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="requestType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:int"/>
+            <xs:element name="user_id" type="xs:int"/>
+            <xs:element name="start_point" type="ns:coordType"/>
+            <xs:element name="end_point" type="ns:coordType"/>
+            <xs:element name="datetime" type="xs:string"/>
+            <xs:element name="preference_parameter" type="xs:string"/>
+            <xs:element name="status" type="ns:statusType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="crossroadType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:int"/>
+            <xs:element name="city_id" type="xs:int"/>
+            <xs:element name="coord" type="ns:coordType"/>
+            <xs:element name="type" type="ns:typeType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="roadSegmentType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:int"/>
+            <xs:element name="city_id" type="xs:int"/>
+            <xs:element name="start_coord" type="ns:coordType"/>
+            <xs:element name="end_coord" type="ns:coordType"/>
+            <xs:element name="length" type="xs:float"/>
+            <xs:element name="quality_factor" type="xs:float"/>
+            <xs:element name="user_intensity" type="xs:float"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="user" type="ns:userType"/>
+    <xs:element name="request" type="ns:requestType"/>
+    <xs:element name="crossroad" type="ns:crossroadType"/>
+    <xs:element name="roadSegment" type="ns:roadSegmentType"/>
+
+    <xs:complexType name="abstractRouteType" abstract="true">
+        <xs:sequence>
+            <xs:element name="route_id" type="xs:int"/>
+            <xs:element name="total_distance" type="xs:float"/>
+            <xs:element name="total_time" type="xs:float"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="routeType">
+        <xs:complexContent>
+            <xs:extension base="ns:abstractRouteType">
+                <xs:sequence>
+                    <xs:element name="route_road_segment" type="ns:roadSegmentType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:key name="userKey">
+        <xs:selector xpath="ns:user"/>
+        <xs:field xpath="ns:user/id"/>
+    </xs:key>
+
+    <xs:keyref name="userKeyRef" refer="userKey">
+        <xs:selector xpath="ns:request"/>
+        <xs:field xpath="ns:request/user_id"/>
+    </xs:keyref>
+</xs:schema>

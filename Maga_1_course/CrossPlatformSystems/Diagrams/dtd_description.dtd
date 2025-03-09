@@ -1,0 +1,52 @@
+<!DOCTYPE data [
+    <!ENTITY % user_attrs "id ID, email CDATA, role CDATA, full_name CDATA">
+    <!ENTITY % city_attrs "id ID, name CDATA, crossroad_numbers CDATA">
+    <!ENTITY % roadsegment_attrs "id ID, city_id IDREF, start_coord CDATA, end_coord CDATA, length CDATA, quality_factor CDATA, user_intensity CDATA">
+    <!ENTITY % crossroad_attrs "id ID, city_id IDREF, coord CDATA, type CDATA">
+    <!ENTITY % crossroadlink_attrs "crossroad_id IDREF, road_segment_id IDREF, road_degree CDATA">
+    <!ENTITY % roaditem_attrs "id ID, item_type CDATA, coord CDATA, weight CDATA, actuality CDATA">
+    <!ENTITY % roaditemlink_attrs "road_item_id IDREF, road_segment_id IDREF, factor_number CDATA">
+    <!ENTITY % request_attrs "id ID, user_id IDREF, start_point CDATA, end_point CDATA, datetime CDATA, preference_parameter CDATA">
+    <!ENTITY % route_attrs "id ID, request_id IDREF, total_distance CDATA, time CDATA, total_weight CDATA">
+    <!ENTITY % video_attrs "id ID, user_id IDREF, cloud_link CDATA, timelapses_json CDATA">
+    <!ENTITY % imagetimeframe_attrs "id ID, video_id IDREF, cloud_link CDATA, coord CDATA, reliability_factor CDATA">
+    <!ENTITY % routeroadsegmentlink_attrs "route_id IDREF, road_segment_id IDREF, sequence_number CDATA, start_coord CDATA, end_coord CDATA, total_distance CDATA, total_time CDATA">
+
+    <!ELEMENT data (user*, city*, roadsegment*, crossroad*, crossroadlink*, roaditem*, roaditemlink*, request*, route*, video*, imagetimeframe*, routeroadsegmentlink*)>
+
+    <!ELEMENT user EMPTY>
+    <!ATTLIST user %user_attrs;>
+
+    <!ELEMENT city EMPTY>
+    <!ATTLIST city %city_attrs;>
+
+    <!ELEMENT roadsegment EMPTY>
+    <!ATTLIST roadsegment %roadsegment_attrs;>
+
+    <!ELEMENT crossroad EMPTY>
+    <!ATTLIST crossroad %crossroad_attrs;>
+
+    <!ELEMENT crossroadlink EMPTY>
+    <!ATTLIST crossroadlink %crossroadlink_attrs;>
+
+    <!ELEMENT roaditem EMPTY>
+    <!ATTLIST roaditem %roaditem_attrs;>
+
+    <!ELEMENT roaditemlink EMPTY>
+    <!ATTLIST roaditemlink %roaditemlink_attrs;>
+
+    <!ELEMENT request EMPTY>
+    <!ATTLIST request %request_attrs;>
+
+    <!ELEMENT route EMPTY>
+    <!ATTLIST route %route_attrs;>
+
+    <!ELEMENT video EMPTY>
+    <!ATTLIST video %video_attrs;>
+
+    <!ELEMENT imagetimeframe EMPTY>
+    <!ATTLIST imagetimeframe %imagetimeframe_attrs;>
+
+    <!ELEMENT routeroadsegmentlink EMPTY>
+    <!ATTLIST routeroadsegmentlink %routeroadsegmentlink_attrs;>
+]>
